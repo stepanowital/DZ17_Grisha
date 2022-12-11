@@ -20,6 +20,8 @@ class MovieSchema(Schema):
     trailer = fields.Str()
     year = fields.Int()
     rating = fields.Float()
+    director_id = fields.Str()
+    genre_id = fields.Str()
 
 
 class DirectorSchema(Schema):
@@ -88,18 +90,22 @@ class MovieView(Resource):
     def put(self, uid: int):
         updated_rows = db.session.query(Movie).filter(Movie.id == uid).update(request.json)
 
+        print(updated_rows)
+
         if updated_rows != 1:
             return "", 400
+
+        db.session.commit()
 
         return "", 204
 
     def delete(self, uid: int):
         deleted_rows = db.session.query(Movie).get(uid)
 
-        if deleted_rows != 1:
-            return "", 400
+        if not deleted_rows:
+            return "ТАм уже ничего не было", 400
 
-        db.session.delete()
+        db.session.delete(deleted_rows)
         db.session.commit()
 
         return "", 204
@@ -137,13 +143,17 @@ class DirectorView(Resource):
         if updated_rows != 1:
             return "", 400
 
+        db.session.commit()
+
+        return "", 204
+
     def delete(self, uid: int):
         deleted_rows = db.session.query(Director).get(uid)
 
-        if deleted_rows != 1:
-            return "", 400
+        if not deleted_rows:
+            return "ТАм уже ничего не было", 400
 
-        db.session.delete()
+        db.session.delete(deleted_rows)
         db.session.commit()
 
         return "", 204
@@ -179,17 +189,21 @@ class GenresView(Resource):
         if updated_rows != 1:
             return "", 400
 
+        db.session.commit()
+
+        return "", 204
+
     def delete(self, uid: int):
         deleted_rows = db.session.query(Genre).get(uid)
 
-        if deleted_rows != 1:
-            return "", 400
+        if not deleted_rows:
+            return "ТАм уже ничего не было", 400
 
-        db.session.delete()
+        db.session.delete(deleted_rows)
         db.session.commit()
 
         return "", 204
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
